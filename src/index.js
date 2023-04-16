@@ -1,9 +1,11 @@
 const Moralis = require('moralis').default;
-
+const mongoose = require("mongoose");
+const colors = require("colors");
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const Product = require("./schema/product/productModel");
 
 // to use our .env variables
 require('dotenv').config();
@@ -21,6 +23,24 @@ app.use(
     credentials: true,
   })
 );
+
+// Connect database mongodb
+
+const connectDB = async () => {
+  try {
+      const conn = await mongoose.connect(process.env.DATABASE_URL);
+      console.log(
+          colors.cyan.underline(`MongoDB Connected: ${conn.connection.host}`)
+      );
+  } catch (error) {
+      console.log(colors.red.underline.bold(`Error: ${error.message}`));
+      process.exit(1);
+  }
+};
+
+connectDB();
+
+// AUTH
 
 const config = {
   domain: process.env.APP_DOMAIN,
@@ -97,6 +117,18 @@ app.get('/logout', async (req, res) => {
     return res.sendStatus(403);
   }
 });
+
+// PRODUCT
+
+app.post('/api/product', async (req, res) => {
+  const newProduct = new Product(req.body);
+  try {
+    const sendProduct = await newProduct.save();
+    res.status(200).json(sendProduct);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
 
 app.get("/", (req, res) => {
   res.send("APP IS RUNNING");
