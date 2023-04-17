@@ -130,6 +130,15 @@ app.post('/api/product', async (req, res) => {
   }
 })
 
+app.get('/api/product', async (req, res) => {
+  try {
+    const getProducts = await Product.find();
+    res.status(200).json(getProducts);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
 app.get("/", (req, res) => {
   res.send("APP IS RUNNING");
 });
