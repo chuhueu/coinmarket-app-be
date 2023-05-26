@@ -13,6 +13,8 @@ const ProductSchema = new mongoose.Schema(
     startedYear: { type: String, required: true },
     completedYear: { type: String, required: true },
     desc: { type: String },
+    tokenAddress: {type: String},
+    typeArt: {type: String}
   },
   { timestamps: true }
 );
