@@ -43,6 +43,7 @@ connectDB();
 
 const productRoute = require("./routes/productRoute");
 const authRoute = require("./routes/authRoute");
+const { contractAddress, contractABI } = require("../contract");
 
 app.use("/api/product", productRoute);
 // app.use("/", authRoute);
@@ -272,6 +273,54 @@ app.get("/ethtoken", async (req, res) => {
     return res.status(400).json();
   }
 });
+
+// createNFT
+// app.post("/create-nft", async (req, res) => {
+//   try {
+//     const _name = "My NFT";
+//     const _image =
+//       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png";
+//     const _price = 0.002;
+//     const _description = "This is my NFT";
+//     const options = {
+//       contractAddress: contractAddress,
+//       functionName: "createNFT",
+//       abi: contractABI,
+//       params: [_name, _image, _price, _description],
+//     };
+
+//     try {
+//       const response = await Moralis.EvmApi.utils.runContractFunction({
+//         address: contractAddress,
+//         functionName: "name",
+//         abi: [
+//           {
+//             inputs: [],
+//             name: "name",
+//             outputs: [
+//               {
+//                 internalType: "string",
+//                 name: "",
+//                 type: "string",
+//               },
+//             ],
+//             stateMutability: "view",
+//             type: "function",
+//           },
+//         ],
+//       });
+//       console.log(response.raw);
+//       // return res.status(200).json(response);
+//     } catch (error) {
+//       console.error("Failed to create NFT:", error);
+//     }
+
+//     return res.status(200).json(response);
+//   } catch (e) {
+//     console.log(`Something went wrong ${e}`);
+//     return res.status(400).json(e);
+//   }
+// });
 
 app.get("/", (req, res) => {
   res.send("APP IS RUNNING");
