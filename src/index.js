@@ -7,7 +7,8 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const Product = require("./schema/productModel");
 const { EvmChain } = require("@moralisweb3/common-evm-utils");
-
+const fs = require("fs");
+// const { create } = require("ipfs-http-client");
 // to use our .env variables
 require("dotenv").config();
 
@@ -187,7 +188,7 @@ app.get("/nft/owners", async (req, res) => {
     const { query } = req;
 
     const response = await Moralis.EvmApi.nft.getNFTTokenIdOwners({
-      chain: "0x1",
+      chain: query.chain,
       format: "decimal",
       // mediaItems: false,
       address: query.address ?? "",
@@ -201,15 +202,14 @@ app.get("/nft/owners", async (req, res) => {
   }
 });
 
-app.get("/getcontractnft", async (req, res) => {
+app.get("/nft/contract", async (req, res) => {
   try {
     const { query } = req;
-    const chain = query.chain == "0x5" ? "0x5" : "0x1";
 
     const response = await Moralis.EvmApi.nft.getContractNFTs({
-      chain,
+      chain: query.chain,
       format: "decimal",
-      address: query.contractAddress,
+      address: query.address,
     });
 
     return res.status(200).json(response);
@@ -274,73 +274,51 @@ app.get("/ethtoken", async (req, res) => {
   }
 });
 
-// createNFT
-// app.post("/create-nft", async (req, res) => {
-//   try {
-//     const _name = "My NFT";
-//     const _image =
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png";
-//     const _price = 0.002;
-//     const _description = "This is my NFT";
-//     const options = {
-//       contractAddress: contractAddress,
-//       functionName: "createNFT",
-//       abi: contractABI,
-//       params: [_name, _image, _price, _description],
-//     };
-
-//     try {
-//       const response = await Moralis.EvmApi.utils.runContractFunction({
-//         address: contractAddress,
-//         functionName: "name",
-//         abi: [
-//           {
-//             inputs: [],
-//             name: "name",
-//             outputs: [
-//               {
-//                 internalType: "string",
-//                 name: "",
-//                 type: "string",
-//               },
-//             ],
-//             stateMutability: "view",
-//             type: "function",
-//           },
-//         ],
-//       });
-//       console.log(response.raw);
-//       // return res.status(200).json(response);
-//     } catch (error) {
-//       console.error("Failed to create NFT:", error);
-//     }
-
-//     return res.status(200).json(response);
-//   } catch (e) {
-//     console.log(`Something went wrong ${e}`);
-//     return res.status(400).json(e);
-//   }
-// });
+// const fileUploads = [
+//   {
+//     path: "1.json",
+//     content: fs.readFile("./1.json", { encoding: "utf8" }),
+//   },
+// ];
 
 app.get("/", (req, res) => {
   res.send("APP IS RUNNING");
 });
+
+// const ipfsClient = async () => {
+//   const ipfs = await create({
+//     host: "ipfs.infura.io",
+//     port: 5001,
+//     protocol: "https",
+//   });
+//   return ipfs;
+// };
+
+// const saveFile = async () => {
+//   const ipfs = await ipfsClient();
+
+//   let data = {
+//     name: "test",
+//     description: "test demo",
+//   };
+//   let result = await ipfs.add({
+//     path: "abc.json",
+//     content: JSON.stringify(data),
+//   });
+
+//   console.log(data);
+// };
+
+// saveFile();
 
 const startServer = async () => {
   await Moralis.start({
     apiKey: process.env.MORALIS_API_KEY,
   });
 
-  const address = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045";
+  // const res = await Moralis.EvmApi.ipfs.uploadFolder({ abi: fileUploads });
 
-  const chain = EvmChain.ETHEREUM;
-
-  const response = await Moralis.EvmApi.nft.getWalletNFTs({
-    address,
-    chain,
-  });
-
-  // console.log(response.toJSON());
+  // console.log(res.result);
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
